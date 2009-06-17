@@ -1,0 +1,8 @@
+ChangeLog
+MANIFEST
+Makefile.PL
+PODTAIL.txt
+bin/ftp-get
+lib/Net/FTP/Robust.pm
+t/01use.t
+t/99pod.t
