@@ -4,9 +4,9 @@ use 5.008;
 
 WriteMakefile
  ( NAME	 	=> 'Net::FTP::Robust'
- , VERSION	=> '0.01'
+ , VERSION	=> '0.02'
  , PREREQ_PM    =>
-   { Log::Report     => 0.17
+   { Log::Report     => 0.25
    , Time::HiRes     => 0
    , Test::Pod       => '1.00'
    }

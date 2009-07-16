@@ -40,6 +40,11 @@ Net::FTP::Robust - download files over FTP
  Log::Report mode => 'VERBOSE';
  Log::Report mode => 'DEBUG';
 
+ # to catch all reports: errors, warnings, debugs etc
+ try { $ftp->get(...) } mode => 'DEBUG';
+ push @trace, $@->exceptions; # simply prints all
+ $@->reportFatal;             # re-cast real errors
+
 =chapter DESCRIPTION
 
 This module is specialized in (on the moment only) downloading large
@@ -127,7 +132,10 @@ directory (defaults to '.')
 
 sub get($$)
 {   my ($self, $from, $to) = @_;
-    $to       ||= '.';
+
+    $to = File::Spec->curdir
+        unless defined $to && length $to;
+    $from =~ s,^/?,/,g;  # ensure leading /
 
     my $retries = $self->{login_attempts};
     my $success = 0;
@@ -147,9 +155,7 @@ sub get($$)
         else
         {   $ftp->binary;
 
-            my ($dir, $base) = $from =~ m!^(?:(.*)/)?(.+)!;
-            $dir ||= '.';
-
+            my ($dir, $base) = $from =~ m!^(?:(.*)/)?([^/]*)!;
             if(! $ftp->cwd($dir))
             {   notice __x"directory {dir} does not exist: {msg}"
                    , dir => $dir, msg => $ftp->message;
@@ -169,12 +175,11 @@ sub get($$)
               , new   => $stats->{new_files}
               , total => $stats->{files}
               , size  => size_short($stats->{downloaded})
-              , secs  => sprintf("%.3s", $elapsed)
+              , secs  => sprintf("%7.3s", $elapsed)
               , speed => size_short($stats->{downloaded} / $elapsed);
 
             $ftp->close;
         }
-
 
         my $last_attempt = $retries!=0 && $attempt >= $retries;
         last if $success || $last_attempt;
@@ -188,7 +193,7 @@ sub get($$)
 sub _recurse($$$$)
 {   my ($self, $ftp, $dir, $entry, $to) = @_;
 
-    my $full = "$dir/$entry";
+    my $full = $dir . $entry;
     if($self->{skip_names}->($ftp, $full, $entry))
     {   trace "skipping $full";
         return 1;
@@ -201,6 +206,7 @@ sub _recurse($$$$)
         -d $to || mkdir $to
             or fault __x"cannot create directory {dir}", dir => $to;
 
+        $full .= '/' if $full ne '/';
         my $success = $self->_get_directory($ftp, $full, $to);
         $ftp->cdup;
         return $success;
@@ -226,7 +232,7 @@ sub _get_directory($$$)
 sub _get_file($$$$)
 {   my ($self, $ftp, $dir, $base, $to) = @_;
 
-    my $remote_name = "$dir/$base";
+    my $remote_name = $dir . $base;
     my $local_name  = "$to/$base";
     my $local_temp  = "$to/.$base";
 
@@ -258,14 +264,14 @@ sub _get_file($$$$)
 
     if($got_size)
     {   # download did not complete last time
-        trace "continue file $remote_name, got " . size_short($got_size)
+        info "continue file $remote_name, got " . size_short($got_size)
             . " from " . size_short($expected_size)
             . ", needs " . size_short($to_download);
 
         $ftp->restart($got_size);
     }
     else
-    {   trace "get new file $base (" . size_short($expected_size). ")";
+    {   trace "get " . size_short($expected_size). " for $local_name";
     }
 
     my $start   = [ gettimeofday ];
@@ -274,11 +280,11 @@ sub _get_file($$$$)
 
     my $downloaded = ( -s $local_temp || 0) - $got_size;
 
-    if($downloaded)
+    if(defined $downloaded)
     {   info __x"{amount} in {secs}s is {speed}/s: {fn}"
          , amount => size_short($downloaded)
-         , secs => sprintf("%3.3f", $elapsed)
-         , speed  => size_short($downloaded/$elapsed), fn => $local_name;
+         , secs => sprintf("%7.3f", $elapsed)
+         , speed  => size_short($downloaded/$elapsed), fn => $base;
         $stats->{downloaded} += $downloaded;
     }
     else

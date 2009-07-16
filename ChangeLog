@@ -4,5 +4,13 @@
 Alll changes made by Mark Overmeer, unless explicitly stated
 differently.
 
+version 0.02: Thu Jul 16 12:19:18 CEST 2009
+	- require Log::Report 0.25 because example uses new features.
+	- use File::Spec::curdir to replace explicit '.'
+	- INFO output about download speed now uses basename of file,
+	  and trace shows the long was (was reversed)
+	- remove paths names showed extra './' in fron of them. Removed.
+	- fix warning on empty files.
+
 version 0.01: Wed Jun 17 10:01:31 CEST 2009
 	- initial version
