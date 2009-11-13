@@ -4,7 +4,7 @@ use 5.008;
 
 WriteMakefile
  ( NAME	 	=> 'Net::FTP::Robust'
- , VERSION	=> '0.02'
+ , VERSION	=> '0.03'
  , PREREQ_PM    =>
    { Log::Report     => 0.25
    , Time::HiRes     => 0
@@ -12,7 +12,7 @@ WriteMakefile
    }
  , EXE_FILES    => [ 'bin/ftp-get' ]
  , AUTHOR       => 'Mark Overmeer'
- , ABSTRACT     => 'download files over FTP'
+ , ABSTRACT     => 'download directories over unencrypted FTP'
  , LICENSE      => 'perl'
  );
 

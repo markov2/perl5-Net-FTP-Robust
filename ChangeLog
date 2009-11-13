@@ -4,6 +4,11 @@
 Alll changes made by Mark Overmeer, unless explicitly stated
 differently.
 
+version 0.03: Fri Nov 13 11:50:52 CET 2009
+	- errors on $ftp->cdup went unnoticed.
+	- changes to allow Net::FTPSSL::Robust to extend Net::FTP::Robust
+	  cleanly.
+
 version 0.02: Thu Jul 16 12:19:18 CEST 2009
 	- require Log::Report 0.25 because example uses new features.
 	- use File::Spec::curdir to replace explicit '.'
