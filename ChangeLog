@@ -4,6 +4,11 @@
 Alll changes made by Mark Overmeer, unless explicitly stated
 differently.
 
+version 0.04: Fri Nov 13 23:42:56 CET 2009
+	- make restart loading of a file overridable.
+	- do not cwd to '', but '/'
+	- solve problems with downloading whole ftp account
+
 version 0.03: Fri Nov 13 11:50:52 CET 2009
 	- errors on $ftp->cdup went unnoticed.
 	- changes to allow Net::FTPSSL::Robust to extend Net::FTP::Robust

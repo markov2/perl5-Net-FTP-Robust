@@ -166,7 +166,8 @@ sub get($$)
 
         $ftp->binary;
         my ($dir, $base) = $from =~ m!^(?:(.*)/)?([^/]*)!;
-        if($ftp->cwd($dir))
+        $dir ||= '/';
+        unless($ftp->cwd($dir))
         {   notice __x"directory {dir} does not exist: {msg}"
               , dir => $dir, msg => $ftp->message;
             next ATTEMPT;
@@ -208,7 +209,13 @@ sub _recurse($$$$)
         return 1;
     }
 
-    if($ftp->cwd($entry))
+    if(!length $entry)
+    {   -d $to || mkdir $to
+            or fault __x"cannot create directory {dir}", dir => $to;
+
+        return $self->_get_directory($ftp, $dir, $to);
+    }
+    elsif($ftp->cwd($entry))
     {   # Entering directory
         $to = File::Spec->catdir($to, $entry);
         
@@ -248,6 +255,21 @@ sub _modif_time($$)
     $ftp->mdtm($fn) || 0;
 }
     
+sub _can_restart($$$$)
+{   my ($ftp, $name, $temp, $expected_size) = @_;
+    my $got_size = -s $temp || 0;
+    $got_size or return 0;
+
+    # download did not complete last time
+    my $to_download   = $expected_size - $got_size;
+    info "continue file $name, got " . size_short($got_size)
+       . " from " . size_short($expected_size)
+       . ", needs " . size_short($to_download);
+
+    $ftp->restart($got_size);
+    $got_size;
+}
+
 sub _get_file($$$$)
 {   my ($self, $ftp, $dir, $base, $to) = @_;
 
@@ -265,6 +287,7 @@ sub _get_file($$$$)
         {   # not downloadable
             notice __x"download file {fn}, but already exists as non-file"
               , fn => $local_name;
+            return 1;
         }
 
         my $local_mtime = (stat $to)[9];
@@ -278,21 +301,10 @@ sub _get_file($$$$)
     }
 
     my $expected_size = $ftp->size($base);
-    my $got_size      = -s $local_temp || 0;
-    my $to_download   = $expected_size - $got_size;
-
-    if($got_size)
-    {   # download did not complete last time
-        info "continue file $remote_name, got " . size_short($got_size)
-            . " from " . size_short($expected_size)
-            . ", needs " . size_short($to_download);
-
-        $ftp->restart($got_size);
-    }
-    else
-    {   trace "get " . size_short($expected_size). " for $local_name";
-    }
-
+    my $got_size
+       = $self->_can_restart($ftp, $local_name, $local_temp, $expected_size)
+          or trace "get " . size_short($expected_size). " for $local_name";
+ 
     my $start   = [ gettimeofday ];
     my $success = $ftp->get($base, $local_temp);
     my $elapsed = tv_interval $start;
@@ -325,7 +337,7 @@ sub _get_file($$$$)
 }
 
 sub size_short($)
-{   my $size = shift;
+{   my $size = shift || 0;
     my $name = ' B';
     ($size, $name) = ($size/1024, 'kB') if $size > 1000;
     ($size, $name) = ($size/1024, 'MB') if $size > 1000;
