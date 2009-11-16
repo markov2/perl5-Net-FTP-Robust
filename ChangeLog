@@ -4,6 +4,9 @@
 Alll changes made by Mark Overmeer, unless explicitly stated
 differently.
 
+version 0.06: Mon Nov 16 21:44:31 CET 2009
+	- Hum, change for Net::FTPSSL::Robust broke directory list
+
 version 0.05: Mon Nov 16 20:59:39 CET 2009
 	- change port option abbreviation to 'P', because 'p' was
 	  also used for the (more often used) 'password'.
