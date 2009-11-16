@@ -4,6 +4,11 @@
 Alll changes made by Mark Overmeer, unless explicitly stated
 differently.
 
+version 0.05: Mon Nov 16 20:59:39 CET 2009
+	- change port option abbreviation to 'P', because 'p' was
+	  also used for the (more often used) 'password'.
+	- options processing for connection broken.
+
 version 0.04: Fri Nov 13 23:42:56 CET 2009
 	- make restart loading of a file overridable.
 	- do not cwd to '', but '/'

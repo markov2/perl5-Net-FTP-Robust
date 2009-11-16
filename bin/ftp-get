@@ -13,7 +13,7 @@ my $mode = 0;
 GetOptions
     # Net::FTP::new options
     'host|h=s'     => \$new_opt{Host}
-  , 'port|p=i'     => \$new_opt{Port}
+  , 'port|P=i'     => \$new_opt{Port}
   , 'timeout|t=i'  => \$new_opt{Timeout}
   , 'passive!'     => \$new_opt{Passive}
 

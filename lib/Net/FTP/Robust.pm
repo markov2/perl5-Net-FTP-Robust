@@ -131,7 +131,7 @@ directory (defaults to '.')
 
 sub _connect($)
 {   my ($self, $opts) = @_;
-    my $ftp  = Net::FTP->new(@$opts);
+    my $ftp  = Net::FTP->new(%$opts);
     my $err  = defined $ftp ? undef : $@;
     ($ftp, $err);
 }
