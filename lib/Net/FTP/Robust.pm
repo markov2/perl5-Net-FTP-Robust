@@ -257,7 +257,7 @@ sub _modif_time($$)
 }
     
 sub _can_restart($$$$)
-{   my ($ftp, $name, $temp, $expected_size) = @_;
+{   my ($self, $ftp, $name, $temp, $expected_size) = @_;
     my $got_size = -s $temp || 0;
     $got_size or return 0;
 
@@ -310,6 +310,11 @@ sub _get_file($$$$)
     if(defined $expected_size && $expected_size==$got_size)
     {   # download succesful, but mv or close was not
         $success = 1;
+        if($expected_size==0)
+        {   open OUT, '>', $local_temp
+                or fault __x"cannot create empty {file}", file => $local_temp;
+            close OUT;
+        }
     }
     else
     {   my $start   = [ gettimeofday ];
