@@ -10,9 +10,9 @@ WriteMakefile
    , Time::HiRes     => 0
    }
  , EXE_FILES    => [ 'bin/ftp-get' ]
- , AUTHOR       => 'Mark Overmeer'
+ , AUTHOR       => 'Mark Overmeer <markov@cpan.org>'
  , ABSTRACT     => 'download files over FTP'
- , LICENSE      => 'perl'
+ , LICENSE      => 'perl_5'
 
  , META_MERGE =>
       { 'meta-spec' => { version => 2 }
@@ -22,9 +22,9 @@ WriteMakefile
               , url  => 'https://github.com/markov2/perl5-Net-FTP-Robust.git'
               , web  => 'https://github.com/markov2/perl5-Net-FTP-Robust'
               }
+          , homepage => 'http://perl.overmeer.net/CPAN/'
+          , license  => [ 'http://dev.perl.org/licenses/' ]
           }
-      , homepage => 'http://perl.overmeer.net/CPAN/'
-      , license  => [ 'http://dev.perl.org/licenses/' ]
       }
 
  );

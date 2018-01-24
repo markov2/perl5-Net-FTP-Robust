@@ -6,6 +6,9 @@ differently.
 
 version 0.90:
 
+	Fixes:
+	- fix metadata [Mohammad S Anwar]
+
 version 0.09: Mon Jan 22 20:33:05 CET 2018
 	- $ftp->message may be empty, sometimes.
 	- warning about cdup needs values filled-in
